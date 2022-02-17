@@ -1,0 +1,40 @@
+<body>
+<h1>Hello!</h1>
+<input id="post_input" name="post_input">
+<button onclick="createNewPost()">Сохранить</button>
+<div id="response"></div>
+<script>
+    async function getData() {
+        var response = await fetch('https://83ac-94-245-175-1.ngrok.io/')
+        return await response.json()
+    }
+
+    async function renderResponse() {
+        var data = await getData()
+        var container = document.getElementById('response')
+        container.innerText = ''
+        var todos = data.todos
+        todos.map((elem) => {
+            var text_style = !elem.status ? "color: blue" : "\"text-decoration:line-through;\""
+            container.innerHTML += `<button onclick="changeTodo(this)" style=${text_style}>${elem.todo}</button>`
+        })
+    }
+    async function createNewPost(){
+        var input = document.getElementById('post_input')
+        await fetch('https://83ac-94-245-175-1.ngrok.io/?status=false&todo='+input.value,{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+        renderResponse()
+    }
+
+    async function changeTodo(elem){
+        await fetch('https://83ac-94-245-175-1.ngrok.io/'+elem.innerText+'/change')
+        renderResponse()
+    }
+
+    renderResponse()
+</script>
+</body>
